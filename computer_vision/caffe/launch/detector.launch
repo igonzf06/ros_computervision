@@ -1,0 +1,14 @@
+<launch>
+    <!--Caffe-->
+    <param name="net" type="str" value="caffe" />
+    <param name="device" type="str" value="cpu" />
+    <param name="model" type="str" value="$(find caffe)/models/model_caffe/places205CNN_iter_300000_upgraded.caffemodel" />
+    <param name="config" type="str" value="$(find caffe)/models/model_caffe/places205CNN_deploy_upgraded.prototxt" />
+    <param name="image_size" type="int" value="224" />
+    <param name="classes" type="str" value="$(find caffe)/models/model_caffe/Places205_classes.txt" />
+    <param name="threshold" type="double" value="0.4" />
+    <param name="input_topic" type="str" value="/usb_cam/image_raw" />
+    <param name="detection_topic" type="str" value="/image_detection" />
+
+    <node name="object_detector" pkg="caffe" type="detect.py" output="screen"/>
+</launch>

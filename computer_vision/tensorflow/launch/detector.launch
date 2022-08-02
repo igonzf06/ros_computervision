@@ -1,0 +1,12 @@
+<launch>
+    <param name="net" type="str" value="TensorFlow" />
+    <param name="device" type="str" value="cpu" />
+    <param name="model" type="str" value="$(find tensorflow)/models/frozen_graph_indoor.pb" />
+    <param name="image_size" type="int" value="224" />
+    <param name="classes" type="str" value="$(find tensorflow)/models/rooms_classes.txt" />
+    <param name="threshold" type="double" value="0.4" />
+    <param name="input_topic" type="str" value="/usb_cam/image_raw" />
+    <param name="detection_topic" type="str" value="/image_detection" />
+
+    <node name="object_detector" pkg="tensorflow" type="detect.py" output="screen"/>
+</launch>
