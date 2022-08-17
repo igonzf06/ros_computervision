@@ -1,0 +1,3 @@
+string label
+float64 probability
+BoundingBox boundingBox

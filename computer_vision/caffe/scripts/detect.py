@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 import rospy
 from sensor_msgs.msg import Image
+from caffe.msg import Prediction, Predictions, BoundingBox
 from cv_bridge import CvBridge, CvBridgeError
 import os
 
@@ -14,6 +15,7 @@ class Detector:
         # params
         model_path = rospy.get_param("/model")
         model_config = rospy.get_param("/config")
+        net = rospy.get_param("/net")
         self.device = rospy.get_param("/device")
         classes = rospy.get_param("/classes")
         input_topic = rospy.get_param("/input_topic")
@@ -30,8 +32,10 @@ class Detector:
             0, 255, size=(len(self.class_names), 3))
 
         # load the DNN model
-        self.model = cv2.dnn.readNet(model_config, model_path)
-        self.pub = rospy.Publisher(detection_topic, Image, queue_size=10)
+        self.model = cv2.dnn.readNetFromCaffe(model_config, model_path)
+        self.pub = rospy.Publisher(detection_topic, Image, queue_size=100)
+        self.pubPredictions = rospy.Publisher(
+            "/predictions", Predictions, queue_size=100)
 
         self.bridge = CvBridge()
 
@@ -50,14 +54,30 @@ class Detector:
             # forward pass through the model to carry out the detection
             output = self.model.forward()
 
+            predictions = Predictions()
+            predictions.header = data.header
+
             if len(output.shape) > 2:
                 for detection in output[0, 0, :, :]:
+
                     # extract the confidence of the detection
                     confidence = detection[2]
                     # draw bounding boxes only if the detection confidence is above...
                     # ... a certain threshold, else skip
                     if confidence > self.threshold:
-                        # get the class id
+                        # create msg
+                        prediction = Prediction()
+                        prediction.label = self.class_names[int(
+                            detection[1])-1]
+                        prediction.probability = detection[2]
+                        boundingb = BoundingBox()
+                        boundingb.x = int(detection[3] * image_width)
+                        boundingb.y = int(detection[4] * image_height)
+                        boundingb.width = int(detection[5] * image_width)
+                        boundingb.height = int(detection[6] * image_height)
+                        prediction.boundingBox = boundingb
+                        predictions.Predictions.append(prediction)
+                        ''' # get the class id
                         class_id = detection[1]
                         # map the class id to the class
                         class_name = self.class_names[int(class_id)-1]
@@ -75,7 +95,7 @@ class Detector:
                         cv2.putText(image, class_name, (int(box_x), int(
                             box_y - 5)), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
                         # cv2.putText(image, class_name, (50, 50), cv2.FONT_HERSHEY_SIMPLEX,
-                        #            1, color, 2, cv2.LINE_AA)
+                        #            1, color, 2, cv2.LINE_AA) '''
             else:
 
                 detections = np.argsort(output[0])[::-1][:5]
@@ -86,7 +106,8 @@ class Detector:
                 cv2.putText(image, text, (5, 25),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             try:
-                self.pub.publish(self.bridge.cv2_to_imgmsg(image, "bgr8"))
+                #self.pub.publish(self.bridge.cv2_to_imgmsg(image, "bgr8"))
+                self.pubPredictions.publish(predictions)
             except CvBridgeError as e:
                 print(e)
 

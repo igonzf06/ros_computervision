@@ -1,9 +1,11 @@
 <launch>
     <!--Caffe-->
-    <param name="net" type="str" value="caffe" />
+    <param name="net" type="str" value="Caffe" />
     <param name="device" type="str" value="cpu" />
-    <param name="model" type="str" value="$(find caffe)/models/model_caffe/places205CNN_iter_300000_upgraded.caffemodel" />
-    <param name="config" type="str" value="$(find caffe)/models/model_caffe/places205CNN_deploy_upgraded.prototxt" />
+    <!--param name="model" type="str" value="$(find caffe)/models/model_caffe/places205CNN_iter_300000_upgraded.caffemodel" />
+    <param name="config" type="str" value="$(find caffe)/models/model_caffe/places205CNN_deploy_upgraded.prototxt" /-->
+    <param name="model" type="str" value="$(find caffe)/models/face_detection/res_ssd_300Dim.caffeModel" />
+    <param name="config" type="str" value="$(find caffe)/models/face_detection/weights_prototxt.txt" />
     <param name="image_size" type="int" value="224" />
     <param name="classes" type="str" value="$(find caffe)/models/model_caffe/Places205_classes.txt" />
     <param name="threshold" type="double" value="0.4" />
@@ -11,4 +13,5 @@
     <param name="detection_topic" type="str" value="/image_detection" />
 
     <node name="object_detector" pkg="caffe" type="detect.py" output="screen"/>
+    <node name="object_visualizer" pkg="caffe" type="visualizer.py" output="screen"/>
 </launch>

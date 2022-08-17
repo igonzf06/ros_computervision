@@ -19,7 +19,6 @@ class Detector:
         # params
         net = rospy.get_param("/net")
         self.model_path = rospy.get_param("/model")
-        self.arch = rospy.get_param("/arch")
         self.device = rospy.get_param("/device")
         self.threshold = rospy.get_param("/threshold")
         self.image_size = rospy.get_param("/image_size")
@@ -98,7 +97,7 @@ class Detector:
                 # get the class name
                 class_name = self.class_names[int(class_id)-1]
                 text = "Label: {}, {:.2f}%".format(
-                    class_name, output[0][class_id] * self.base_predict)
+                    class_name, output[0][class_id] * 10)
                 # put the text in the image
                 cv2.putText(image, text, (5, 25),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
