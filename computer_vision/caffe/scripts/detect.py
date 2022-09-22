@@ -20,6 +20,7 @@ class Detector:
         classes = rospy.get_param("/classes")
         input_topic = rospy.get_param("/input_topic")
         detection_topic = rospy.get_param("/detection_topic")
+        prediction_topic = rospy.get_param("/prediction_topic")
         self.image_size = rospy.get_param("/image_size")
         self.threshold = rospy.get_param("/threshold")
 
@@ -33,13 +34,13 @@ class Detector:
 
         # load the DNN model
         self.model = cv2.dnn.readNetFromCaffe(model_config, model_path)
-        self.pub = rospy.Publisher(detection_topic, Image, queue_size=100)
-        self.pubPredictions = rospy.Publisher(
-            "/predictions", Predictions, queue_size=100)
+        self._pub = rospy.Publisher(detection_topic, Image, queue_size=100)
+        self._pubPredictions = rospy.Publisher(
+            prediction_topic, Predictions, queue_size=100)
 
         self.bridge = CvBridge()
 
-        self.subs = rospy.Subscriber(
+        self._subs = rospy.Subscriber(
             input_topic, Image, self.callback)
 
     def callback(self, data):
@@ -81,7 +82,7 @@ class Detector:
                         class_id = detection[1]
                         # map the class id to the class
                         class_name = self.class_names[int(class_id)-1]
-                        color = self.COLORS[int(class_id)]
+                        color = self.COLORS[int(class_id)-1]
                         # get the bounding box coordinates
                         box_x = detection[3] * image_width
                         box_y = detection[4] * image_height
@@ -106,8 +107,8 @@ class Detector:
                 cv2.putText(image, text, (5, 25),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
             try:
-                #self.pub.publish(self.bridge.cv2_to_imgmsg(image, "bgr8"))
-                self.pubPredictions.publish(predictions)
+                #self._pub.publish(self.bridge.cv2_to_imgmsg(image, "bgr8"))
+                self._pubPredictions.publish(predictions)
             except CvBridgeError as e:
                 print(e)
 

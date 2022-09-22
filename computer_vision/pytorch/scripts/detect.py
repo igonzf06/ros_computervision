@@ -38,7 +38,7 @@ class Detector:
             0, 255, size=(len(self.class_names), 3))
 
         # Conver pytorch model to onnx model to opencv
-        model_path = "/home/irene/tfm_ros_ws/src/room_detection/models/frame_based/resnet50/resnet50_action.onnx"
+        model_path = "/home/irene/tfm_ros_ws/src/ros_computervision/computer_vision/pytorch/models/frame_based/resnet50_action.onnx"
         model = models.__dict__['resnet50'](pretrained=False)
         print(model)
         ''' model.fc = nn.Linear(2048, len(self.class_names))

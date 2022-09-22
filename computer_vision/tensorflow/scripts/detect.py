@@ -94,13 +94,14 @@ class Detector:
                 detections = np.argsort(output[0])[::-1][:5]
                 # get the class id to the class
                 class_id = detections[0]
+                print(output[0])
                 # get the class name
                 class_name = self.class_names[int(class_id)-1]
                 text = "Label: {}, {:.2f}%".format(
-                    class_name, output[0][class_id] * 10)
+                    class_name, output[0][class_id] * 100)
                 # put the text in the image
                 cv2.putText(image, text, (5, 25),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             try:
 
                 self.pub.publish(self.bridge.cv2_to_imgmsg(image, "bgr8"))

@@ -28,18 +28,18 @@ class Visualizer:
         self.COLORS = np.random.uniform(
             0, 255, size=(len(self.class_names), 3))
 
-        self.pub = rospy.Publisher(detection_topic, Image, queue_size=100)
+        self._pub = rospy.Publisher(detection_topic, Image, queue_size=100)
 
         self.bridge = CvBridge()
 
-        self.subs = message_filters.Subscriber(
+        self._subs = message_filters.Subscriber(
             input_topic, Image)
-        self.subsP = message_filters.Subscriber(
+        self._subsP = message_filters.Subscriber(
             "/predictions", Predictions)
 
-        self.ts = message_filters.ApproximateTimeSynchronizer(
-            [self.subs, self.subsP], 10, 0.1)
-        self.ts.registerCallback(self.callback)
+        self._ts = message_filters.ApproximateTimeSynchronizer(
+            [self._subs, self._subsP], 10, 0.1)
+        self._ts.registerCallback(self.callback)
 
     def callback(self, image_data, predictions):
         try:
@@ -48,22 +48,19 @@ class Visualizer:
             image_height, image_width, _ = image.shape
 
             for pred in predictions.Predictions:
-
                 class_name = pred.label
                 color = self.COLORS[0]
+                print(class_name)
                 # get the bounding box coordinates
                 boundingBox = pred.boundingBox
                 # draw a rectangle around each detected object
-                cv2.rectangle(image, (boundingBox.x, boundingBox.y), (
-                    boundingBox.width, boundingBox.height), color, thickness=2)
+                cv2.rectangle(image, (int(boundingBox.x), int(boundingBox.y)), (
+                    int(boundingBox.width), int(boundingBox.height)), color, thickness=2)
                 # put the FPS text on top of the frame
-                cv2.putText(image, class_name, (boundingBox.x,
-                            boundingBox.y), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
+                cv2.putText(image, class_name, (int(boundingBox.x),
+                            int(boundingBox.y)), cv2.FONT_HERSHEY_SIMPLEX, 1, color, 2)
 
-                try:
-                    self.pub.publish(self.bridge.cv2_to_imgmsg(image, "bgr8"))
-                except CvBridgeError as e:
-                    print(e)
+            self._pub.publish(self.bridge.cv2_to_imgmsg(image, "bgr8"))
 
         except CvBridgeError as e:
             print(e)

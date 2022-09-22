@@ -44,9 +44,9 @@ class Detector:
         #self.model = torch.hub.load
         entrypoints = torch.hub.list('pytorch/vision', force_reload=True)
         print(entrypoints)
-        self.model.load_state_dict(torch.load(weights))
-        self.model.eval()
-        self.model.to(self.device)
+        # self.model.load_state_dict(torch.load(weights))
+        # self.model.eval()
+        # self.model.to(self.device)
 
         self.pub = rospy.Publisher(detection_topic, Image, queue_size=10)
 

@@ -6,7 +6,8 @@
     <param name="config" type="str" value="$(find pytorch)/models/ssdlite320_mobilenet_v3_large_coco-a79551df.pth" />
     <param name="model" type="str" value="$(find pytorch)/models/ssdlite.py" />
     <param name="image_size" type="int" value="224" />
-    <param name="classes" type="str" value="$(find pytorch)/models/model_pytorch/object_detection_classes_coco.txt" />
+    <param name="classes" type="str" value="$(find pytorch)/models/frame_based/action_classes.txt" />
+    <!--param name="classes" type="str" value="$(find pytorch)/models/model_pytorch/object_detection_classes_coco.txt" /-->
     <param name="threshold" type="double" value="0.4" />
     <param name="input_topic" type="str" value="/usb_cam/image_raw" />
     <param name="detection_topic" type="str" value="/image_detection" />
