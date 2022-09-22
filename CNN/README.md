@@ -1,9 +1,9 @@
 ### Installation
 ```shell
-python3 -m <env_name> /path/to/new/virtual/environment
-virtualenv <env_name>
-source <env_name>/bin/activate
-(<env_name>)$ pip install -r path/to/requirements.txt
+$ python3 -m <env_name> /path/to/new/virtual/environment
+$ virtualenv <env_name>
+$ source <env_name>/bin/activate
+$ (<env_name>)$ pip install -r path/to/requirements.txt
 ```
 
 ### Pre-trained CNN comparison
